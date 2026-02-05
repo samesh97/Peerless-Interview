@@ -11,15 +11,18 @@ namespace PeerlessInterview.src.Controller.Customer;
 public class CustomerController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<CustomerController> _logger;
 
-    public CustomerController(IMediator mediator)
+    public CustomerController(IMediator mediator, ILogger<CustomerController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     [HttpPost("filter")]
     public IActionResult FindCustomers([FromBody] CustomerSearchDto dto)
     {
+        _logger.LogInformation($"Request to find customers received with filter: {dto}");
         var result = _mediator.Send(new CustomerFilterQuery(dto));
         return Ok(CommonResponse.Success(result.Result));
     }
@@ -29,6 +32,7 @@ public class CustomerController : ControllerBase
         [FromBody] CustomerCreateDto dto
     )
     {
+        _logger.LogInformation($"Request to create a customer received with payload: {dto}");
 
         if(!ModelState.IsValid)
         {
@@ -38,13 +42,14 @@ public class CustomerController : ControllerBase
 
 
         var rs = _mediator.Send(new Command.Customer.Create.CustomerCreateCommand(dto));
-        
         return Ok(CommonResponse.Success(rs.Result));
     }
 
     [HttpPatch("{customerCode}")]
     public IActionResult UpdateCustomer(string customerCode, [FromBody] CustomerUpdateDto dto)
     {
+        _logger.LogInformation($"Request to update customer received with payload: {dto}, and customerCode: {customerCode}");
+
         if(string.IsNullOrEmpty(customerCode))
         {
             return BadRequest(CommonResponse.Error("Customer Code is required"));
@@ -61,7 +66,6 @@ public class CustomerController : ControllerBase
         }
 
         var rs = _mediator.Send(new Command.Customer.Update.CustomerUpdateCommand(customerCode, dto));
-
         return Ok(CommonResponse.Success(rs.Result));
     }
 }
