@@ -60,7 +60,7 @@ public class CustomerController : ControllerBase
             return BadRequest(CommonResponse.Error("Request body is required"));
         }
 
-        if(dto.Name == null && dto.ShortName == null && dto.City == null && dto.State == null && dto.Country == null)
+        if(!dto.hasAnyUpdate())
         {
             return BadRequest(CommonResponse.Error("No fields to update."));
         }
