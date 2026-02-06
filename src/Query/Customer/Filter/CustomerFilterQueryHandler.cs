@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using MediatR;
+using PeerlessInterview.src.Api.Exception;
 using PeerlessInterview.src.Repository.Customer;
 
 namespace PeerlessInterview.src.Query.Customer.Filter;
@@ -18,12 +18,12 @@ public class CustomerFilterQueryHandler : IRequestHandler<CustomerFilterQuery, L
         var dto = request._dto;
         if(dto == null)
         {
-            throw new Api.Exception.ValidationException("Filteration criteria object cannot be null.");
+            throw new ValidationException("Filteration criteria object cannot be null.");
         }
 
         if(!dto.hasAnyFilter())
         {
-            throw new Api.Exception.ValidationException("At least one filteration criteria must be provided.");
+            throw new ValidationException("At least one filteration criteria must be provided.");
         }
 
         var result = _customerRepository.GetCustomersByFilter(dto);
